@@ -1,0 +1,31 @@
+/// <reference types="cypress" />
+
+describe('Delete posts', function () {
+    it('DeleteDePostDieJeNetHebtAangemaakt', function () {
+        cy.visit("http://192.168.99.100:8080/")  
+        cy.wait(2000)   
+        cy.get('#meta-2 > ul > li:nth-child(1) > a').scrollIntoView()
+        .should('be.visible')
+        .wait(2000).click()
+        cy.wait(1000)
+        cy.get('#user_login').clear().type('wouter.van.praag@salves.nl')
+        cy.wait(1000)
+        cy.get('#user_pass').clear().type('Kameel131!')
+        cy.wait(1000)
+        cy.get('#wp-submit').click()     
+        cy.url().should('eq', 'http://192.168.99.100:8080/wp-admin/')   
+     
+     //ga naar berichten
+     cy.get('#menu-posts > a > div.wp-menu-name').click() 
+
+     //nu met functie click multiple alles aanvinken
+    cy.get('[name="post[]"]').click({ multiple: true })
+
+     //bij dropdown acties kiezen voor 'Naar prullenbak'       
+     cy.get('#bulk-action-selector-top').select('Naar prullenbak')
+
+     //klik op toepassen
+     cy.get('#doaction').click()
+     
+    })
+    })  
