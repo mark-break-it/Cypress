@@ -1,0 +1,22 @@
+/// <reference types="cypress" />
+
+Cypress.Commands.add('vooraf', (userType, options = {}) => {
+  beforeEach('Should Login',function () {
+    cy.visit("http://192.168.99.100:8080//")
+    cy.get(".site-title a").should('have.attr', 'href' ,'http://192.168.99.100:8080/') 
+    cy.contains("Log in").scrollIntoView({ duration: 2000 }).click()
+    cy.wait(20)  
+    cy.get("#user_login").click().type("steven")
+    cy.get("#user_pass").click().type("Polaris@01")
+    cy.get("#wp-submit").contains("Log In").click()
+    cy.wait(10)
+    cy.url().should('eq', 'http://192.168.99.100:8080/wp-admin/')
+  })
+})
+
+Cypress.Commands.add('achteraf', (userType, options = {}) => {
+  afterEach('Should Logout',function() {
+    cy.contains("Cypress.io").click()
+    cy.contains("Log out").scrollIntoView({ duration: 2000 }).click()
+  })
+})

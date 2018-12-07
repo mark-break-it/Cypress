@@ -1,0 +1,111 @@
+/// <reference types="cypress" />
+import { vooraf } from './Salves_BeforeAndAfter'
+import { achteraf } from './Salves_BeforeAndAfter'
+
+describe('Cypress.io', function () {
+    it('should login before each function', function() {
+        cy.vooraf()
+    })
+    it('should logout before each function', function() {
+        cy.achteraf()
+    })
+
+    //Opdracht 2 Maak een post aan
+    it('Should make a post', function() {
+        cy.get("#menu-posts > a > div.wp-menu-name").click()
+        cy.url().should('eq', 'http://192.168.99.100:8080/wp-admin/edit.php')
+        cy.contains("Add New").click()
+        cy.get("#title").click().type("Eerste Post")
+        cy.get("#content-html").click()
+        cy.get("#content").click().type("Eerste post tekst")
+        cy.get("#content-tmce").click()
+        cy.get("#publish").click()
+        cy.wait(10)
+        cy.contains("View Post").click()
+        cy.contains("Cypress.io").click()
+        cy.wait(10)
+        cy.get(".content-area").find(".entry-title a")
+    })
+
+    //Opdracht 4 Maak een comment op een van de posts aan met een user ander dan de admin
+    it('Should make a comment different then user admin', function() {
+        cy.contains("Cypress.io").click()
+        cy.contains("Log out").scrollIntoView({ duration: 2000 }).click()
+        cy.wait(20)
+        cy.get("#user_login").click().type("Admin")
+        cy.get("#user_pass").click().type("Polaris@02")
+        cy.get("#wp-submit").contains("Log In").click()
+        cy.wait(10)
+        cy.contains("Cypress.io").click()
+        cy.wait(10)          
+        cy.get(".entry-title").contains("Eerste Post").click() 
+        cy.wait(10)
+        cy.get("#comment").click().type("Commentaar")
+        cy.get("#submit").click()
+    })
+
+    //Opdracht 6 Delete de post die je net hebt aangemaakt
+    it('Should delete a post', function() {
+        cy.get("#menu-posts > a > div.wp-menu-name").click()
+        cy.get(".row-title").contains("Eerste Post").click()
+        cy.wait(10)
+        cy.get("#delete-action > a").contains("Move to Trash").click()
+    })    
+
+    //Opdracht 3 Maak een user aan
+    it('Should make a new user', function() {
+        cy.get("#menu-users > a > div.wp-menu-name").click()
+        cy.get("#wpbody-content > div.wrap > a").contains("Add New").click()
+        cy.get("#user_login").click().type("testuser")
+        cy.get("#email").click().type("stevendebruin@gmail.com")
+        cy.get("#createusersub").click()
+        cy.get("#the-list").contains("testuser")
+    })  
+    
+    //Opdracht 3.1 Delete de nieuwe user
+    it('Should delete the new user', function() {
+        cy.get("#menu-users > a > div.wp-menu-name").click()
+        cy.get("#the-list tr td").contains("testuser").trigger('mouseover').parent().parent().contains("Delete").click({force:true})
+        cy.get("#submit").click()   
+        cy.wait(10)     
+        cy.get("#wp-admin-bar-site-name > a").click()
+    })
+
+    //Opdracht 5 Maak een Page aan onder de Menu structuur
+    it('Should make a new page in the menu', function() {
+        cy.get("#menu-pages > a > div.wp-menu-name").click()
+        cy.get("#wpbody-content > div.wrap > a").contains("Add New").click()
+        cy.get("#title").click().type("testpagina")
+        cy.wait(10)        
+        cy.get("#parent_id").select("Sample Page")
+        cy.wait(10)
+        cy.get("#publish").click()
+        cy.wait(10)
+    })
+
+    //Opdracht 5.1 Delete de nieuwe page onder de Menu structuur
+    it('Should make a new page in the menu', function() {
+        cy.get("#menu-pages > a > div.wp-menu-name").click()
+        cy.get(".row-title").contains("testpagina").click()
+        cy.wait(10)
+        cy.get("#delete-action > a").contains("Move to Trash").click()
+    })
+
+    //Opdracht 6.2 Batch delete alle posts die zijn aangemaakt - to do   
+    
+    //Opdracht Login onder water
+    it('Should login under water', function () {
+        cy.request({
+            method: 'POST',
+            url: 'http://192.168.99.100:8080/wp-login.php', // baseUrl is prepended to url
+            form: true, // indicates the body should be form urlencoded and sets Content-Type: application/x-www-form-urlencoded headers
+            body: {
+            log: 'steven',
+            pwd: 'Polaris@01'
+            }
+        })
+        cy.visit('http://192.168.99.100:8080/wp-admin/')
+        cy.get('#wpbody-content > div.wrap > h1').contains('Dashboard')
+    })
+    ;
+});
